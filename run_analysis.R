@@ -63,14 +63,31 @@ read.csv("UCI HAR Dataset/train/y_train.txt", header = FALSE,
     set_tidy_names %>%
     assign(x = "X_train", ., pos = 1)
 
+# import subject data for the test data set as a factor
+read.csv("UCI HAR Dataset/test/subject_test.txt", header = FALSE, 
+         col.names = "subject", colClasses = "factor" ) %>%
+    as_tibble %>%
+    cbind(X_test) %>%
+    assign(x = "X_test", ., pos = 1)
+
+# import subject data for the training data set as a factor
+read.csv("UCI HAR Dataset/train/subject_train.txt", header = FALSE, 
+         col.names = "subject", colClasses = "factor" ) %>%
+    as_tibble %>%
+    cbind(X_train) %>%
+    assign(x = "X_train", ., pos = 1)
+
+# add source column to dataset before merging with rbind
 data.frame(datasource = rep("test", nrow(X_test))) %>%
     cbind(X_test) %>%
     assign(x = "X_test", ., pos = 1)
 
+# add source column to dataset before merging with rbind
 data.frame(datasource = rep("train", nrow(X_train))) %>%
     cbind(X_train) %>%
     assign(x = "X_train", ., pos = 1)
 
+# combine train and test datasets
 obs <- rbind(X_train,X_test) %>% as_tibble
 
 # read activity labels
@@ -85,7 +102,7 @@ levels(obs$activity)[levels(obs$activity) == activitylabels[,"index"]] <-
     activitylabels[,"activity"]
 
 # collect columns we want to keep (first 2, means and stdevs.)
-first_cols <- c(TRUE,TRUE,rep(FALSE,length(colnames(obs)) - 2))
+first_cols <- c(rep(TRUE,3),rep(FALSE,length(colnames(obs)) - 3))
 mean_cols <- grepl("mean", colnames(obs))
 std_cols <- grepl("std", colnames(obs))
 
@@ -95,6 +112,8 @@ select(obs, which(first_cols | mean_cols | std_cols) ) %>%
 #   ^^^^^ OK, needs work vvvvvv
 
 obs %>%
-    group_by(datasource) %>%
-    summarise(n = n())
+    select(which(first_cols | mean_cols | std_cols) ) %>%
+    group_by(activity) %>%
+    group_by(subject) %>%
+    summarise_all(mean)
 
