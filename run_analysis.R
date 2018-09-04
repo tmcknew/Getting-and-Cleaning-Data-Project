@@ -48,28 +48,28 @@ colnames(X_train) <- X_labels$name
 # import activity data for the test data set as a factor
 # then cbind to X_test
 read.csv("UCI HAR Dataset/test/y_test.txt", header = FALSE, 
-         col.names = c("activity"), colClasses = c("factor") ) %>%
+         col.names = "activity", colClasses = "factor" ) %>%
     as_tibble %>%
     cbind(X_test) %>%
     set_tidy_names %>%
-    assign(x = "X_test", ., pos=1)
+    assign(x = "X_test", ., pos = 1)
 
 # import activity data for the training data set as a factor
 # then cbind to X_train
 read.csv("UCI HAR Dataset/train/y_train.txt", header = FALSE, 
-         col.names = c("activity"), colClasses = c("factor") ) %>%
+         col.names = "activity", colClasses = "factor" ) %>%
     as_tibble %>%
     cbind(X_train) %>%
     set_tidy_names %>%
-    assign(x = "X_train", ., pos=1)
+    assign(x = "X_train", ., pos = 1)
 
-data.frame(datasource = rep("X_test.txt", nrow(X_test))) %>%
+data.frame(datasource = rep("test", nrow(X_test))) %>%
     cbind(X_test) %>%
-    assign(x = "X_test", ., pos=1)
+    assign(x = "X_test", ., pos = 1)
 
-data.frame(datasource = rep("X_train.txt", nrow(X_train))) %>%
+data.frame(datasource = rep("train", nrow(X_train))) %>%
     cbind(X_train) %>%
-    assign(x = "X_train", ., pos=1)
+    assign(x = "X_train", ., pos = 1)
 
 obs <- rbind(X_train,X_test) %>% as_tibble
 
@@ -80,46 +80,21 @@ activitylabels <-
                 colClasses = c("integer", "character") ) %>%
                     mutate(activity = tolower(activity))
 
-levels(obs$activity)[levels(obs$activity)==activitylabels[,"index"]] <- 
+# set factor levels in obs to activitylabels[,"activity"]
+levels(obs$activity)[levels(obs$activity) == activitylabels[,"index"]] <- 
     activitylabels[,"activity"]
 
-    
-#   ^^^^^ OK, needs work vvvvvv
-obs %>% 
-    mutate(activity_label = activity_labels[activity,"activity"]) %>%
-    assign(x="obs", ., pos = 1)
-
-activity_train %>%
-    as_tibble %>%
-    mutate(activity_label = activity_labels[activity,"activity"]) %>%
-    assign(x="activity_test", ., pos = 1)
-
-# add logical columns to indicate source before rbinding train and test
-X_train_src <- data.frame(from_X_train = rep(TRUE, nrow(X_train)),
-                         from_X_test = rep(FALSE, nrow(X_train)))
-X_test_src <- data.frame(from_X_train = rep(FALSE, nrow(X_test)),
-                        from_X_test = rep(TRUE, nrow(X_test)))
-# bind columns
-X_train <- cbind(X_train_src,X_train)
-X_test <- cbind(X_test_src,X_test)
-# rm(X_train_src); rm(X_test_src) 
-
-# bind rows from train and test
-obs <- set_tidy_names(rbind(X_train, X_test))
-
+# collect columns we want to keep (first 2, means and stdevs.)
+first_cols <- c(TRUE,TRUE,rep(FALSE,length(colnames(obs)) - 2))
 mean_cols <- grepl("mean", colnames(obs))
 std_cols <- grepl("std", colnames(obs))
-source_cols <- grepl("from_", colnames(obs))
 
-select(obs, which(mean_cols | std_cols) ) %>%
-    as_tibble
+select(obs, which(first_cols | mean_cols | std_cols) ) %>%
+    as_tibble %>% colnames
+
+#   ^^^^^ OK, needs work vvvvvv
 
 obs %>%
-    select( contains("mean"), contains("std") ) %>%
-    as_tibble %>%
-    group_by(from_X_train) %>%
+    group_by(datasource) %>%
     summarise(n = n())
 
-for (v in levels(a)) {
-    print(paste0(v,"/X_",v,".txt") )
-}
