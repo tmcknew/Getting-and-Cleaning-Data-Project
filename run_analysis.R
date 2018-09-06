@@ -13,20 +13,23 @@
 
 rm(list = ls())
 # we will use "fread" from "data.table" to read the data
-install.packages("data.table")
+# install.packages("data.table")
 # and dplyr for tidying
-install.packages("dplyr")
+# install.packages("dplyr")
 # and tibble for tibbles
-install.packages("tibble")
+# install.packages("tibble")
 
-library(data.table)
-library(dplyr)
-library(tibble)
+library(data.table); library(dplyr); library(tibble)
 
 # ensure files are present
-if (!file.exists("UCI HAR Dataset/")) {
-    url = "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
-    download.file(url, destfile = "UCI HAR Dataset.zip", method = "curl")
+data_dir = "UCI HAR Dataset/"
+if (!file.exists(data_dir)) {
+    if (!file.exists("UCI HAR Dataset.zip")) {
+        url = "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
+        paste("Downloading data from", url) %>% print
+        download.file(url, destfile = "UCI HAR Dataset.zip", method = "curl")
+        }
+    paste0("Decompressing archive into '", data_dir, "'") %>% print
     unzip(zipfile = "UCI HAR Dataset.zip" )
 }
 
@@ -51,7 +54,7 @@ read.csv("UCI HAR Dataset/test/y_test.txt", header = FALSE,
          col.names = "activity", colClasses = "factor" ) %>%
     as_tibble %>%
     cbind(X_test) %>%
-    set_tidy_names %>%
+    set_tidy_names(quiet = TRUE) %>%
     assign(x = "X_test", ., pos = 1)
 
 # import activity data for the training data set as a factor
@@ -60,7 +63,7 @@ read.csv("UCI HAR Dataset/train/y_train.txt", header = FALSE,
          col.names = "activity", colClasses = "factor" ) %>%
     as_tibble %>%
     cbind(X_train) %>%
-    set_tidy_names %>%
+    set_tidy_names(quiet = TRUE) %>%
     assign(x = "X_train", ., pos = 1)
 
 # import subject data for the test data set as a an integer
@@ -101,6 +104,21 @@ activitylabels <-
 levels(obs$activity)[levels(obs$activity) == activitylabels[,"index"]] <- 
     activitylabels[,"activity"]
 
+# fix column names to be friendlier
+testnames <- sample(1:length(names(obs)),6)
+names(obs) %>%
+    gsub("^t","timeseries_",.) %>%
+    gsub("^f","fft_",.) %>%
+    gsub("Body","body_",.) %>%
+    gsub("Gravity","gravity_",.) %>%
+    gsub("Acc","acceleration_vector_",.) %>%
+    gsub("Gyro","angular_velocity_",.) %>%
+    gsub("Mag","magnitude_",.) %>%
+    gsub("(bandsEnergy\\(\\)-)([0-9]+),([0-9]+)(..[0-9]+)",
+         "energyband_\\2_\\3",.) %>%
+        .[testnames]
+names(obs)[testnames]
+
 # collect columns we want to keep (first 2, means and stdevs.)
 first_cols <- c(rep(TRUE,2),rep(FALSE,length(colnames(obs)) - 2))
 mean_cols <- grepl("mean", colnames(obs))
@@ -111,5 +129,6 @@ avg_obs <- obs %>%
     select(which(first_cols | mean_cols | std_cols) ) %>%
     arrange(activity, subject) %>%
     group_by(activity, subject) %>%
-    summarise_if(is.numeric, mean)
-
+    summarise_if(is.numeric, mean) %>%
+    select(activity, subject) %>%
+    print
