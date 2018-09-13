@@ -1,6 +1,6 @@
 # Getting and Cleaning Data Course Project
 
-as outlined in the [project instructions](/project_instructions.md), the r-script `run_analysis.r`([here](/run_analysis.r)) completes the following objectives:
+as outlined in the [project instructions](/project_instructions.md), the r-script `run_analysis.r`([here](/run_analysis.R)) completes the following objectives:
 
 1. Merges the training and the test sets to create one data set.
 2. Extracts only the measurements on the mean and standard deviation 
@@ -12,7 +12,7 @@ data set
 tidy data set with the average of each variable for each activity 
 and each subject.
 
-`run_analysis.r` has the following dependencies:
+`run_analysis.R` has the following dependencies:
 
 + `data.table` for fast file reads with `fread`
 + `dplyr` for tidying data tables, and 
