@@ -1,6 +1,6 @@
 # Getting and Cleaning Data Course Project
 
-as outlined in the [project instructions]('project intstructions.md'), the r-script `run_analysis.r` completes the following objectives:
+as outlined in the [project instructions]("project intstructions.md"), the r-script `run_analysis.r` completes the following objectives:
 
 1. Merges the training and the test sets to create one data set.
 2. Extracts only the measurements on the mean and standard deviation 
@@ -59,7 +59,7 @@ colnames(X_test) <- X_labels$name
 colnames(X_train) <- X_labels$name
 ```
 
-Next, the activity data is read from `test/y_test.txt` and `train/y_train.txt` as a factor, and column-binded with the appropriate data frame. The factors will be relabelled once the data sets are row-bound into one.
+Next, the activity data is read from `test/y_test.txt` and `train/y_train.txt` as a factor, and column-bound with the appropriate data frame. The factors will be relabelled once the data sets are row-bound into one.
 
 ```r
 # import activity data for the test data set as a factor
@@ -146,7 +146,7 @@ mean_std_X_all <- X_all %>%
 #   for each measurement.
 ```
 
-
+Now for the column names, we construct a pipeline of `gsub` to make a series of changes, replacing abbreviations with more human readable full names. **Objective 4 Complete**
 
 ```r
 # fix column names to be friendlier
@@ -175,6 +175,8 @@ names(mean_std_X_all) <- names(mean_std_X_all) %>%
 #   names(mean_std_X_all)
 ```
 
+And finally a summary table is created, arranging and grouping by activity and subject, then computing means. **Objective 5 complete**
+
 ```r
 summary_X_all <- mean_std_X_all %>%
     arrange(activity, subject) %>%
@@ -186,6 +188,8 @@ summary_X_all <- mean_std_X_all %>%
 #   tidy data set with the average of each variable for each activity 
 #   and each subject.
 ```
+
+Now the tidy summary dataset is exported as a .txt file for submission:
 
 ```r
 write.table(summary_X_all, file = "out.txt", row.name = FALSE)
