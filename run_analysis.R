@@ -11,7 +11,7 @@
 #   tidy data set with the average of each variable for each activity 
 #   and each subject.
 
-rm(list = ls())
+# rm(list = ls())
 # we will use "fread" from "data.table" to read the data
 # install.packages("data.table")
 # and dplyr for tidying
