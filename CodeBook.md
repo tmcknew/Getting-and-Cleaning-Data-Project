@@ -27,7 +27,7 @@ The data were then grouped by subject and activity, and numerical means calculat
 
 ## Columns
 
-The table below indicats the ceolumns present in both `mean_std_X_all` and `summary_X_all`, along with their orignal names and the units of measurement.
+The table below indicats the columns present in both `mean_std_X_all` and `summary_X_all`, along with their orignal names and the units of measurement.
 
 Index | Original Name | Modified Name | Units
 ---:|---|---|---
