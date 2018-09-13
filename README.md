@@ -18,7 +18,7 @@ and each subject.
 + `dplyr` for tidying data tables, and 
 + `tibble` for more table formatting goodness
 
-## run_analysis.r
+## run_analysis.R
 
 The script first checks for the data, downloads it if not present, and extracts it:
 

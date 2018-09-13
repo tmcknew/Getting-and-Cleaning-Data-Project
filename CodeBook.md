@@ -25,9 +25,9 @@ Data from the [UCI HAR Dataset](http://archive.ics.uci.edu/ml/datasets/Human+Act
 9. The summary data set `summary_X_all`(180 observations of 81 variables) was then created, grouping by `activity` and `subject`, then calculating mean values for each variable.
 The data were then grouped by subject and activity, and numerical means calculated for each grouping. 
 
-## Column Names
+## Columns
 
-These are the columns present in the output:
+The table below indicats the ceolumns present in both `mean_std_X_all` and `summary_X_all`, along with their orignal names and the units of measurement.
 
 Index | Original Name | Modified Name | Units
 ---:|---|---|---
