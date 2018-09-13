@@ -1,6 +1,6 @@
 # Getting and Cleaning Data Course Project
 
-as outlined in the [project instructions]("project intstructions.md"), the r-script `run_analysis.r` completes the following objectives:
+as outlined in the [project instructions](project intstructions.md), the r-script `run_analysis.r` completes the following objectives:
 
 1. Merges the training and the test sets to create one data set.
 2. Extracts only the measurements on the mean and standard deviation 
